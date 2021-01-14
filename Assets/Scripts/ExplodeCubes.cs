@@ -15,7 +15,6 @@ public class ExplodeCubes : MonoBehaviour
                 child.gameObject.GetComponent<Rigidbody>().AddExplosionForce(70f, Vector3.up, 5f);
                 child.SetParent(null);
             }
-
             Destroy(collision.gameObject);
             _collisionSet = true;
         }        
