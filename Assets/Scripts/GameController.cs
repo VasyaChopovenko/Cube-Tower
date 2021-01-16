@@ -1,4 +1,5 @@
-﻿ using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
@@ -11,7 +12,9 @@ public class GameController : MonoBehaviour
     public Transform cubeToPlace;
     private float camMoveToYPosition, camMoveSpeed = 2f;
 
-    public GameObject cubeToCreate, allCubes;
+    public Text scoreTxt;
+
+    public GameObject cubeToCreate, allCubes, vfx;
     public GameObject[] canvasStartPage;
     private Rigidbody allCubesRb;
 
@@ -40,6 +43,7 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        scoreTxt.text = "<size=13><color=#F6525E>best</color></size>:" + PlayerPrefs.GetInt("score") + "\n<size=9>now</size>:0";
         toCameraColor = Camera.main.backgroundColor;
         mainCam = Camera.main.transform;
         camMoveToYPosition = 5.9f + nowCube.y - 1f;
@@ -73,6 +77,12 @@ public class GameController : MonoBehaviour
             newCube.transform.SetParent(allCubes.transform);
             nowCube.setVector(newCube.transform.position);
             allCubesPositions.Add(nowCube.getVector());
+
+            if (PlayerPrefs.GetString("music") != "No")
+                GetComponent<AudioSource>().Play();
+
+            GameObject newVfx = Instantiate(vfx, cubeToPlace.position, Quaternion.identity);
+            Destroy(newVfx, 1.5f);
 
             allCubesRb.isKinematic = true;
             allCubesRb.isKinematic = false;
@@ -157,6 +167,11 @@ public class GameController : MonoBehaviour
                 maxZ = Convert.ToInt32(pos.z);
         }
 
+        if (PlayerPrefs.GetInt("score") < maxY - 1)
+            PlayerPrefs.SetInt("score", maxY - 1);
+
+        scoreTxt.text = "<size=13><color=#F6525E>best</color></size>:" + PlayerPrefs.GetInt("score") + "\n<size=9>now</size>:" + (maxY - 1);
+
         camMoveToYPosition = 5.9f + nowCube.y - 1f;
 
         maxHor = maxX > maxZ ? maxX : maxZ;
@@ -167,11 +182,11 @@ public class GameController : MonoBehaviour
             prevCountMaxHorizontal = maxHor;
         }
 
-        if (maxY >= 7)
+        if (maxY >= 15)
             toCameraColor = bgcolors[2];
-        else if (maxY >= 5)
+        else if (maxY >= 10)
             toCameraColor = bgcolors[1];
-        else if (maxY >= 2)
+        else if (maxY >= 5)
             toCameraColor = bgcolors[0];
     }
 }
